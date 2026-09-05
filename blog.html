@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Knowledge Center — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Loan guides, documentation checklists and financial tips from SOLITAIRE FINZ MART." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="blog.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / Knowledge Center</div>
+      <p class="kicker">Knowledge Center</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">Loan guides and financial tips</h1>
+      <p class="lede" style="max-width:60ch; margin-bottom:2.6rem;">Practical, India-specific guidance on loans, documentation and credit — written from years of processing real applications.</p>
+      <div class="grid grid-3" id="blog-cards"></div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("blog-cards").innerHTML = SFM_BLOG_POSTS.map(p => `
+    <div class="card">
+      <span class="badge-outline badge" style="width:fit-content;">${p.category}</span>
+      <h3 style="font-size:1.15rem; margin-top:.6rem;">${p.title}</h3>
+      <p>${p.excerpt}</p>
+      <div class="card-links"><a href="${p.file}">Read Article</a></div>
+    </div>`).join("");
+});
+</script>
+</body>
+</html>

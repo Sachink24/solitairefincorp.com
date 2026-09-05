@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Loan Eligibility Checker — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Get an indicative loan eligibility estimate in under a minute from SOLITAIRE FINZ MART." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="eligibility.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / Eligibility Checker</div>
+      <p class="kicker">Eligibility Checker</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">See an indicative eligibility estimate</h1>
+      <p class="lede" style="max-width:60ch; margin-bottom:2.6rem;">Answer a few quick questions and we'll share an indicative sense of how much you may be eligible to borrow.</p>
+
+      <div class="eligibility-quiz form-panel" data-eligibility-quiz>
+        <div class="quiz-progress"><div class="bar" style="width:0%"></div></div>
+        <div data-quiz-body></div>
+      </div>
+      <p style="font-size:.78rem; color:var(--text-muted); max-width:640px; margin-top:1.6rem;">This is an indicative eligibility assessment only. Final eligibility, interest rate and approval are subject to the policies, verification and approval of the respective lending institution.</p>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/eligibility.js"></script>
+</body>
+</html>

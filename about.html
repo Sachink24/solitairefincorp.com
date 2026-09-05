@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>About Us — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Learn about SOLITAIRE FINZ MART's history, mission, values and expertise in loan and financial advisory services." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="about.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section" style="padding-bottom:2rem;">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / About Us</div>
+      <p class="kicker">About Solitaire Finz Mart</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem); max-width:16ch;">Guiding borrowers through better lending decisions</h1>
+      <p class="lede" style="max-width:60ch;">SOLITAIRE FINZ MART is a loan and financial advisory practice based in Bhiwandi, Thane, helping individuals and businesses navigate home loans, business finance, property finance and balance transfers.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper-dim">
+    <div class="container">
+      <div class="section-head"><p class="kicker">Our Story</p><h2>Fifteen-plus years, one file at a time</h2></div>
+      <div class="timeline" id="about-timeline"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-3">
+        <div class="card">
+          <h3>Our Mission</h3>
+          <p>To provide transparent, responsible guidance that helps customers understand their loan options clearly — simplifying a process that is often confusing, and putting the customer's interest first at every step.</p>
+        </div>
+        <div class="card">
+          <h3>Our Vision</h3>
+          <p>To be a dependable, long-term financial partner for individuals and businesses across the region — known for clarity, follow-through and honest advice, not just transaction volume.</p>
+        </div>
+        <div class="card">
+          <h3>Our Values</h3>
+          <ul>
+            <li>Integrity in every recommendation</li>
+            <li>Transparency on costs and timelines</li>
+            <li>Customer-first decision making</li>
+            <li>Professionalism and accountability</li>
+            <li>Long-term relationships over one-time transactions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-head"><p class="kicker">Our Expertise</p><h2>Deep, hands-on experience across loan categories</h2></div>
+      <div class="grid grid-4">
+        <div class="card"><div class="card-icon" id="icon-home"></div><h3 style="font-size:1.05rem;">Home Loans</h3><p>Purchase, construction and renovation financing.</p></div>
+        <div class="card"><div class="card-icon" id="icon-briefcase"></div><h3 style="font-size:1.05rem;">Business Finance</h3><p>Term loans and working capital for growing businesses.</p></div>
+        <div class="card"><div class="card-icon" id="icon-building"></div><h3 style="font-size:1.05rem;">Property Finance</h3><p>Loan against property and commercial property loans.</p></div>
+        <div class="card"><div class="card-icon" id="icon-cog"></div><h3 style="font-size:1.05rem;">MSME Finance</h3><p>Financing structured for registered small enterprises.</p></div>
+        <div class="card"><div class="card-icon" id="icon-user"></div><h3 style="font-size:1.05rem;">Personal Finance</h3><p>Unsecured personal loans for individual needs.</p></div>
+        <div class="card"><div class="card-icon" id="icon-refresh"></div><h3 style="font-size:1.05rem;">Working Capital</h3><p>Cash-credit and overdraft facilities for operations.</p></div>
+        <div class="card"><div class="card-icon" id="icon-layers"></div><h3 style="font-size:1.05rem;">Loan Structuring</h3><p>Matching the right facility type to your cash flow.</p></div>
+        <div class="card"><div class="card-icon" id="icon-exchange"></div><h3 style="font-size:1.05rem;">Balance Transfer</h3><p>Moving existing loans to better available terms.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="office">
+    <div class="container">
+      <div class="section-head"><p class="kicker">Office Information</p><h2>Visit us in Thane–Bhiwandi</h2></div>
+      <div class="grid grid-2" style="align-items:start;">
+        <div class="form-panel">
+          <p style="font-family:var(--display); font-size:1.3rem; margin-bottom:.6rem;">SOLITAIRE FINZ MART</p>
+          <p style="color:var(--text-muted);">Shop No. 8, Janaram Niwas,<br/>Thane Bhiwandi Road, Thane Bhiwandi, 421302</p>
+          <div class="btn-row" style="margin-top:1.4rem;">
+            <a class="btn btn-primary btn-sm" href="tel:8779023084">Call Now</a>
+            <a class="btn btn-outline btn-sm" href="https://www.google.com/maps/search/?api=1&query=Janaram%20Niwas%2C%20Thane%20Bhiwandi%20Road%2C%20Bhiwandi%2C%20421302" target="_blank" rel="noopener">Get Directions</a>
+          </div>
+        </div>
+        <iframe class="map-frame" loading="lazy" src="https://maps.google.com/maps?q=Bhiwandi%2C%20Thane%2C%20421302&t=&z=13&ie=UTF8&iwloc=&output=embed" title="Office location map"></iframe>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("about-timeline").innerHTML = SFM_TIMELINE.map(t => `
+    <div class="tl-item">
+      <div class="tl-year">${t.year}</div>
+      <h4>${t.title}</h4>
+      <p>${t.text}</p>
+    </div>`).join("");
+
+  [["icon-home","home"],["icon-briefcase","briefcase"],["icon-building","building"],["icon-cog","cog"],
+   ["icon-user","user"],["icon-refresh","refresh"],["icon-layers","layers"],["icon-exchange","exchange"]]
+    .forEach(([id, icon]) => { const el = document.getElementById(id); if (el) el.innerHTML = sfmIcon(icon); });
+});
+</script>
+</body>
+</html>

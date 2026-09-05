@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Services — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Loan advisory, eligibility assessment, documentation assistance and end-to-end loan support from SOLITAIRE FINZ MART." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="services.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section" style="padding-bottom:2rem;">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / Services</div>
+      <p class="kicker">Services</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">Support at every stage of the loan journey</h1>
+      <p class="lede" style="max-width:60ch;">Beyond matching you to a lender, we help with the parts of borrowing that usually cause delay — documentation, comparison and follow-up.</p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="grid grid-3" id="services-grid"></div>
+    </div>
+  </section>
+
+  <section class="section section--forest" style="text-align:center;">
+    <div class="container">
+      <h2 style="max-width:520px; margin:0 auto 1.4rem;">Not sure which service you need?</h2>
+      <div class="btn-row" style="justify-content:center;">
+        <a class="btn btn-primary" href="contact.html">Talk to Our Team</a>
+        <a class="btn btn-outline" href="tel:8779023084">Call 8779023084</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("services-grid").innerHTML = SFM_SERVICES.map(s => `
+    <div class="card">
+      <div class="card-icon">${sfmIcon(s.icon)}</div>
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <p style="font-weight:600; font-size:.85rem; margin-top:.4rem;">Benefits</p>
+      <ul>${s.benefits.map(b=>`<li>${b}</li>`).join("")}</ul>
+      <div class="card-links"><a href="contact.html">Discuss This Service</a><a href="tel:8779023084">Call Us</a></div>
+    </div>`).join("");
+});
+</script>
+</body>
+</html>

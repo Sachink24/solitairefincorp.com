@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sachink24.github.io/solitaire-website/sitemap.xml

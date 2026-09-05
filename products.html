@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Loan Products — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Explore home loans, business loans, loan against property, MSME finance and more from SOLITAIRE FINZ MART." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+<style>
+  .product-detail{ padding:3rem 0; border-top:1px solid var(--line-on-paper); scroll-margin-top:96px; }
+  .product-detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; }
+  .product-detail h3{ font-size:1.9rem; }
+  .product-facts{ display:flex; gap:1.6rem; flex-wrap:wrap; margin:1rem 0 1.6rem; }
+  .product-facts div{ font-size:.85rem; }
+  .product-facts b{ display:block; font-family:var(--display); font-size:1.15rem; color:var(--gold); }
+  @media (max-width:860px){ .product-detail-grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body data-page="products.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section" style="padding-bottom:2rem;">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / Loan Products</div>
+      <p class="kicker">Loan Products</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">Financing built around your requirement</h1>
+      <p class="lede" style="max-width:60ch;">Browse our loan categories below, or open any product for eligibility, document requirements and the typical process.</p>
+    </div>
+  </section>
+
+  <section class="section section--paper-dim" style="padding-top:0;">
+    <div class="container">
+      <div class="grid grid-4" id="product-cards"></div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:1rem;">
+    <div class="container" id="product-details"></div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("product-cards").innerHTML = SFM_PRODUCTS.map(p => `
+    <div class="card">
+      <div class="card-icon">${sfmIcon(p.icon)}</div>
+      <h3 style="font-size:1.1rem;">${p.name}</h3>
+      <p>${p.short}</p>
+      <div class="card-links"><a href="#${p.slug}">View Details</a></div>
+    </div>`).join("");
+
+  document.getElementById("product-details").innerHTML = SFM_PRODUCTS.map(p => `
+    <div class="product-detail" id="${p.slug}">
+      <div class="product-detail-grid">
+        <div>
+          <div class="card-icon" style="margin-bottom:1rem;">${sfmIcon(p.icon, 24)}</div>
+          <h3>${p.name}</h3>
+          <p style="color:var(--text-muted);">${p.short}</p>
+          <div class="product-facts">
+            <div><b>${p.amount}</b>Loan amount</div>
+            <div><b>${p.rate}</b>Interest rate</div>
+            <div><b>${p.tenure}</b>Tenure</div>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-sm" href="application.html?product=${encodeURIComponent(p.name)}">Apply Now</a>
+            <a class="btn btn-outline btn-sm" href="eligibility.html">Check Eligibility</a>
+          </div>
+          <p style="font-size:.76rem; color:var(--text-muted); margin-top:1rem;">*Indicative figures. Actual rate, amount and tenure depend on the lender's assessment.</p>
+        </div>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="font-size:1rem;">Eligibility</h3><ul>${p.eligibility.map(e=>`<li>${e}</li>`).join("")}</ul></div>
+          <div class="card"><h3 style="font-size:1rem;">Documents Required</h3><ul>${p.documents.map(e=>`<li>${e}</li>`).join("")}</ul></div>
+          <div class="card"><h3 style="font-size:1rem;">Benefits</h3><ul>${p.benefits.map(e=>`<li>${e}</li>`).join("")}</ul></div>
+          <div class="card"><h3 style="font-size:1rem;">Application Process</h3><ul>${p.process.map(e=>`<li>${e}</li>`).join("")}</ul></div>
+        </div>
+      </div>
+    </div>`).join("");
+});
+</script>
+</body>
+</html>

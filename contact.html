@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact Us — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Contact SOLITAIRE FINZ MART — call, email, WhatsApp or visit our Thane–Bhiwandi office." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="contact.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section" style="padding-bottom:1.5rem;">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / Contact</div>
+      <p class="kicker">Contact Us</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">Let's talk about your requirement</h1>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="grid grid-2" style="align-items:start; gap:3rem;">
+        <div class="form-panel">
+          <h3 style="margin-bottom:1.2rem;">Send Us a Message</h3>
+          <form data-enquiry-type="contact_form">
+            <div class="form-grid">
+              <div class="field"><label>Full Name</label><input type="text" name="full_name" required /></div>
+              <div class="field"><label>Mobile Number</label><input type="tel" name="mobile" required /></div>
+              <div class="field"><label>Email</label><input type="email" name="email" /></div>
+              <div class="field">
+                <label>Preferred Contact Method</label>
+                <select name="product_interest">
+                  <option value="Call">Call</option>
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="Email">Email</option>
+                </select>
+              </div>
+              <div class="field full"><label>Subject</label><input type="text" name="city" placeholder="e.g. Home loan enquiry" /></div>
+              <div class="field full"><label>Message</label><textarea name="message" rows="4"></textarea></div>
+              <div class="field full field-check">
+                <input type="checkbox" required id="consent" />
+                <label for="consent">I agree to be contacted by SOLITAIRE FINZ MART regarding my enquiry.</label>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:1.2rem;">Send Message</button>
+            <div class="form-msg"></div>
+          </form>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:1.4rem;">
+            <div class="card-icon" id="icon-mappin" style="margin-bottom:.6rem;"></div>
+            <h3>SOLITAIRE FINZ MART</h3>
+            <p style="color:var(--text-muted);">Shop No. 8, Janaram Niwas,<br/>Thane Bhiwandi Road, Thane Bhiwandi, 421302</p>
+            <p style="color:var(--text-muted);">Mon – Sat, 10:00 AM – 7:00 PM</p>
+            <div class="btn-row" style="margin-top:1rem;">
+              <a class="btn btn-primary btn-sm" href="tel:8779023084">Call Now</a>
+              <a class="btn btn-outline btn-sm" href="mailto:sachinkale241981@gmail.com">Email Us</a>
+              <a class="btn btn-outline btn-sm" href="https://wa.me/918779023084" target="_blank" rel="noopener">WhatsApp Us</a>
+            </div>
+          </div>
+          <iframe id="map" class="map-frame" loading="lazy" src="https://maps.google.com/maps?q=Bhiwandi%2C%20Thane%2C%20421302&t=&z=13&ie=UTF8&iwloc=&output=embed" title="Office location map"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/forms.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("icon-mappin");
+  if (el) el.innerHTML = sfmIcon("map-pin");
+});
+</script>
+</body>
+</html>

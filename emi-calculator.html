@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMI Calculator — SOLITAIRE FINZ MART</title>
+<meta name="description" content="Calculate your monthly EMI, total interest and total repayment for any loan amount, rate and tenure." />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-page="emi-calculator.html">
+<div id="site-header" class="site-header"></div>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="breadcrumb"><a href="index.html">Home</a> / EMI Calculator</div>
+      <p class="kicker">EMI Calculator</p>
+      <h1 style="font-size:clamp(2.2rem,4vw,3rem);">Work out your monthly EMI</h1>
+      <p class="lede" style="max-width:60ch; margin-bottom:2.6rem;">Adjust the loan amount, interest rate and tenure to see your estimated monthly instalment and total cost of borrowing.</p>
+
+      <div class="calc-grid" data-emi-calc>
+        <div>
+          <div class="calc-slider">
+            <div class="row-top"><label>Loan Amount</label><output data-emi-amount-out></output></div>
+            <input type="range" data-emi-amount min="100000" max="20000000" step="50000" value="2500000" />
+          </div>
+          <div class="calc-slider">
+            <div class="row-top"><label>Interest Rate</label><output data-emi-rate-out></output></div>
+            <input type="range" data-emi-rate min="6" max="18" step="0.05" value="9.25" />
+          </div>
+          <div class="calc-slider">
+            <div class="row-top"><label>Loan Tenure</label><output data-emi-tenure-out></output></div>
+            <input type="range" data-emi-tenure min="1" max="30" step="1" value="20" />
+          </div>
+          <a class="btn btn-primary" data-emi-apply style="margin-top:1rem;">Apply for This Loan</a>
+          <a class="btn btn-outline" href="tel:8779023084" style="margin-top:1rem; margin-left:.8rem;">Contact Solitaire Finz Mart</a>
+        </div>
+
+        <div class="form-panel">
+          <div class="emi-bar"><div class="principal" data-emi-bar-principal></div><div class="interest" data-emi-bar-interest></div></div>
+          <div class="emi-legend"><span><i class="i-p"></i>Principal</span><span><i class="i-i"></i>Interest</span></div>
+          <div class="ledger-row"><span>Monthly EMI</span><span data-emi-emi></span></div>
+          <div class="ledger-row"><span>Principal Amount</span><span data-emi-principal></span></div>
+          <div class="ledger-row"><span>Total Interest</span><span data-emi-interest></span></div>
+          <div class="ledger-total"><span>Total Repayment</span><span data-emi-total></span></div>
+        </div>
+      </div>
+      <p style="font-size:.78rem; color:var(--text-muted); margin-top:2rem;">This calculator provides an indicative estimate only. Actual EMI depends on the lender's exact terms, processing fees and disbursement schedule.</p>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer" class="site-footer"></div>
+<div id="wa-float"></div>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/shared.js"></script>
+<script src="js/emi.js"></script>
+</body>
+</html>
