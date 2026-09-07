@@ -87,8 +87,8 @@ input,select,textarea{ font-family:var(--body); font-size:1rem; }
 .section--ink .btn-outline:hover, .section--forest .btn-outline:hover{ background:var(--text-on-ink); color:var(--ink); }
 .btn-ghost{ color:var(--gold); font-weight:600; padding:.4em 0; border-radius:0; }
 .btn-ghost:hover{ text-decoration:underline; }
-.btn-row{ display:flex; flex-wrap:wrap; gap:.12rem; }
-.btn-sm{ padding:.55em 1.1em; font-size:.10rem; }
+.btn-row{ display:flex; flex-wrap:wrap; gap:.9rem; }
+.btn-sm{ padding:.55em 1.1em; font-size:.75rem; }
 
 /* ---------- top utility bar (contact + apply CTA, sits above main header) ---------- */
 .site-topbar{
