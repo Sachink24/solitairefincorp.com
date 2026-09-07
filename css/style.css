@@ -108,11 +108,17 @@ input,select,textarea{ font-family:var(--body); font-size:1rem; }
 @media (max-width:480px){
   .topbar-links a.tb-address{ display:none; }
 }
+@media (max-width:380px){
+  .site-topbar .container{ gap:.5rem; }
+  .topbar-links{ gap:.5rem; }
+  .topbar-links a{ font-size:.7rem; }
+  .topbar-cta{ padding:.3em .75em; font-size:.68rem; }
+}
 
 /* ---------- header (Diamond Noir — matches associate-app / Admin Panel / LTC portal) ---------- */
 .site-header{
-  position:sticky; top:0; z-index:50; background:rgba(21,19,15,.97);
-  backdrop-filter:blur(8px); border-bottom:1px solid rgba(176,138,52,.35);
+  position:sticky; top:0; z-index:70; background:rgba(21,19,15,.97);
+  border-bottom:1px solid rgba(176,138,52,.35);
 }
 .site-header .container{ display:flex; align-items:center; justify-content:space-between; height:80px; gap:1.5rem; }
 .wordmark{ display:flex; align-items:center; gap:.65rem; }
@@ -135,6 +141,7 @@ input,select,textarea{ font-family:var(--body); font-size:1rem; }
     position:fixed; inset:80px 0 0 0; background:var(--ink); flex-direction:column;
     align-items:flex-start; padding:2rem var(--gutter); gap:1.4rem; transform:translateX(100%);
     transition:transform .25s ease; overflow-y:auto; border-top:1px solid rgba(176,138,52,.2);
+    z-index:70;
   }
   .nav-main.is-open{ transform:translateX(0); }
   .nav-main a{ font-size:1.1rem; }
@@ -233,6 +240,7 @@ input,select,textarea{ font-family:var(--body); font-size:1rem; }
 
 /* ---------- calculator ---------- */
 .calc-grid{ display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; align-items:start; }
+@media (max-width:860px){ .calc-grid{ grid-template-columns:1fr; } }
 .calc-slider{ display:flex; flex-direction:column; gap:.4rem; margin-bottom:1.4rem; }
 .calc-slider .row-top{ display:flex; justify-content:space-between; font-size:.88rem; font-weight:600; }
 .calc-slider .row-top output{ color:var(--gold); font-family:var(--display); font-size:1.05rem; }
