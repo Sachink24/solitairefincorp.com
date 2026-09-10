@@ -24,6 +24,13 @@ function sfmWaLink(prefilledText) {
   const text = encodeURIComponent(prefilledText || "Hello SOLITAIRE FINZ MART, I'd like to enquire about a loan.");
   return `https://wa.me/${digits}?text=${text}`;
 }
+// Product-specific deep link — the WhatsApp bot recognizes this exact
+// phrasing on the first message and jumps straight into that product's
+// questions instead of showing the main menu. Keep the wording here in
+// sync with product labels in Supabase (public.whatsapp_products.label).
+function sfmWaLinkForProduct(productName) {
+  return sfmWaLink(`Hi, I'm interested in a ${productName}.`);
+}
 function sfmTelLink(){ return `tel:${SFM.business.phone}`; }
 function sfmMailLink(subject){ return `mailto:${SFM.business.email}${subject ? "?subject=" + encodeURIComponent(subject) : ""}`; }
 function sfmMapsLink(){ return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SFM.business.mapsQuery)}`; }
