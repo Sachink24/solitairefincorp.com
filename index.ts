@@ -121,6 +121,38 @@ async function sendOptions(to: string, bodyText: string, options: string[], list
 }
 
 // ---------------------------------------------------------
+// Media download (for document collection) — Graph API media fetch is a
+// two-step process: get a short-lived signed URL from the media id, then
+// fetch that URL with the same bearer token to get the actual bytes.
+// ---------------------------------------------------------
+async function fetchWhatsAppMedia(mediaId: string): Promise<{ bytes: Uint8Array; mimeType: string } | null> {
+  const metaRes = await fetch(`https://graph.facebook.com/v20.0/${mediaId}`, {
+    headers: { "Authorization": `Bearer ${WHATSAPP_ACCESS_TOKEN}` },
+  });
+  if (!metaRes.ok) {
+    console.error("media metadata fetch failed", metaRes.status);
+    return null;
+  }
+  const meta = await metaRes.json();
+  const fileRes = await fetch(meta.url, { headers: { "Authorization": `Bearer ${WHATSAPP_ACCESS_TOKEN}` } });
+  if (!fileRes.ok) {
+    console.error("media download failed", fileRes.status);
+    return null;
+  }
+  const bytes = new Uint8Array(await fileRes.arrayBuffer());
+  return { bytes, mimeType: meta.mime_type ?? "application/octet-stream" };
+}
+
+function extensionForMime(mime: string): string {
+  const map: Record<string, string> = {
+    "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp",
+    "application/pdf": "pdf",
+    "video/mp4": "mp4",
+  };
+  return map[mime] ?? "bin";
+}
+
+// ---------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------
 function normalizePhone(raw: string): string {
@@ -318,7 +350,12 @@ async function handleIncomingMessage(waNumber: string, message: any) {
     return;
   }
 
-  if (isNew) return sendWelcome(waNumber, conversation);
+  if (isNew) {
+    const products = await getActiveProducts();
+    const handledDeepLink = await tryProductDeepLink(waNumber, conversation, text, products);
+    if (handledDeepLink) return;
+    return sendWelcome(waNumber, conversation);
+  }
 
   switch (conversation.state) {
     case "MAIN_MENU":
@@ -329,10 +366,36 @@ async function handleIncomingMessage(waNumber: string, message: any) {
       return handleQuestionReply(waNumber, conversation, text, optionIndex);
     case "STATUS_SELECT":
       return handleStatusSelectReply(waNumber, conversation, optionIndex);
+    case "AWAITING_DOCUMENTS":
+      return handleDocumentUpload(waNumber, conversation, message, text);
     default:
       await updateConversation(conversation.id, { state: "MAIN_MENU" });
       return sendMainMenu(waNumber, conversation);
   }
+}
+
+// ---------------------------------------------------------
+// Website "smart handoff" deep link — product pages/buttons on the site
+// send a predefined message like "Hi, I'm interested in a Home Loan."
+// (see sfmWaLinkForProduct() in js/shared.js). If the very first message
+// of a brand-new conversation matches an active product's label, skip the
+// main menu entirely and jump straight into that product's questions.
+// Only applied on the first message of a NEW conversation — never mid-flow.
+// ---------------------------------------------------------
+async function tryProductDeepLink(waNumber: string, conv: any, rawText: string, products: any[]): Promise<boolean> {
+  if (!rawText) return false;
+  const lower = rawText.toLowerCase();
+  const matched = products.find((p) => lower.includes(p.label.toLowerCase()));
+  if (!matched) return false;
+
+  await updateConversation(conv.id, { state: "ASKING_QUESTION", product_key: matched.key, question_index: 0, answers: {} });
+
+  const greeting = conv.is_existing_customer
+    ? `Welcome back to Solitaire Finz Mart${conv.display_name ? ", " + conv.display_name : ""}! 👋\n\nLet's get your ${matched.label} enquiry started.`
+    : `Welcome to Solitaire Finz Mart! 👋\n\nLet's get your ${matched.label} enquiry started.`;
+  await sendText(waNumber, greeting);
+  await askQuestion(waNumber, conv, matched, 0);
+  return true;
 }
 
 async function sendWelcome(waNumber: string, conv: any) {
@@ -378,8 +441,15 @@ async function handleMainMenuReply(waNumber: string, conv: any, optionIndex: num
     return handOverToAgent(waNumber, conv);
   }
   if (choice === "Submit Documents") {
-    await sendText(waNumber, "Please share the documents here as photos or PDFs, along with your name and loan reference (if known). Our team will pick them up and confirm receipt.");
-    return handOverToAgent(waNumber, conv, /*silent*/ true);
+    const targetLeadId = conv.lead_id ?? conv.matched_lead_id;
+    if (!targetLeadId) {
+      await sendText(waNumber, "We don't have an active loan application on file for this number yet. Let's start a New Loan Requirement first — you'll be able to share documents once that's created.");
+      await updateConversation(conv.id, { state: "MAIN_MENU" });
+      return sendMainMenu(waNumber, conv);
+    }
+    await updateConversation(conv.id, { state: "AWAITING_DOCUMENTS", lead_id: targetLeadId });
+    await sendText(waNumber, 'Please send your documents now as photos or PDFs, one at a time. Type "Done" once you\'ve sent everything.');
+    return;
   }
   // "Existing Loan Query" / "Other Query" — route to a human, since these
   // are open-ended and the bot shouldn't guess.
@@ -485,6 +555,65 @@ async function handleQuestionReply(waNumber: string, conv: any, text: string, op
 
 function lowerIsBack(text: string) {
   return text.trim().toLowerCase() === "back";
+}
+
+// ---------------------------------------------------------
+// Document collection (spec section 21) — downloads the actual media from
+// WhatsApp, stores it in the existing 'lead-documents' storage bucket, and
+// records it in public.lead_documents, linked to the customer's lead.
+// ---------------------------------------------------------
+async function handleDocumentUpload(waNumber: string, conv: any, message: any, text: string) {
+  if (text.trim().toLowerCase() === "done") {
+    await sendText(waNumber, "Thanks — we've received your documents. Our team will review them and follow up if anything else is needed.");
+    if (conv.lead_id) {
+      await sb.from("workflow_history").insert({
+        lead_id: conv.lead_id,
+        action: "Documents submitted via WhatsApp",
+        user_name: "WhatsApp Bot",
+        role: "system",
+      });
+    }
+    await updateConversation(conv.id, { state: "MAIN_MENU" });
+    return sendMainMenu(waNumber, conv);
+  }
+
+  const mediaObj = message.image ?? message.document ?? message.video;
+  if (!mediaObj) {
+    await sendText(waNumber, 'Please send a photo or PDF document, or type "Done" when finished.');
+    return;
+  }
+
+  const media = await fetchWhatsAppMedia(mediaObj.id);
+  if (!media) {
+    await sendText(waNumber, "Sorry, we couldn't process that file. Please try sending it again.");
+    return;
+  }
+
+  const ext = extensionForMime(media.mimeType);
+  const fileName = mediaObj.filename ?? `whatsapp-${Date.now()}.${ext}`;
+  const storagePath = `${conv.lead_id}/whatsapp/${Date.now()}-${fileName}`;
+
+  const { error: uploadError } = await sb.storage.from("lead-documents").upload(storagePath, media.bytes, {
+    contentType: media.mimeType,
+    upsert: false,
+  });
+  if (uploadError) {
+    console.error("document upload failed", uploadError);
+    await sendText(waNumber, "Sorry, we couldn't save that file. Please try sending it again.");
+    return;
+  }
+
+  await sb.from("lead_documents").insert({
+    lead_id: conv.lead_id,
+    source: "whatsapp",
+    storage_path: storagePath,
+    file_name: fileName,
+    mime_type: media.mimeType,
+    file_size: media.bytes.byteLength,
+    uploaded_by: conv.wa_number,
+  });
+
+  await sendText(waNumber, 'Got it, thanks! Send more documents or type "Done" when finished.');
 }
 
 async function finalizeLead(waNumber: string, conv: any, product: any) {
