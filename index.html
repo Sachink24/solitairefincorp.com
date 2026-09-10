@@ -207,6 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="card-links">
         <a href="products.html#${p.slug}">Learn More</a>
         <a href="application.html?product=${encodeURIComponent(p.name)}">Apply Now</a>
+        <a href="${sfmWaLinkForProduct(p.name)}" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>`).join("");
 
