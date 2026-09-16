@@ -18,6 +18,12 @@ const SFM = {
     address: "Shop No. 8, Janaram Niwas, Thane Bhiwandi Road, Thane Bhiwandi, 421302",
     hours: "Mon – Sat, 10:00 AM – 7:00 PM",
     mapsQuery: "Janaram Niwas, Thane Bhiwandi Road, Bhiwandi, 421302",
+    // Social media pages, shown as icon links on the Contact page (and
+    // reusable anywhere else via .fb-link / .ig-link + sfmRewireSocialLinks()).
+    social: {
+      facebook: "https://www.facebook.com/profile.php?id=61594307490423#",
+      instagram: "https://www.instagram.com/sachinkale241981/",
+    },
   },
   supabase: {
     url: "https://nbpvamrwzqrgoiwpadwc.supabase.co",
@@ -266,11 +272,24 @@ function sfmRewireStaticWaLinks() {
   });
 }
 
+// Same single-source-of-truth pattern as the WhatsApp links above —
+// change SFM.business.social in one place, every .fb-link / .ig-link
+// anchor on any page updates automatically.
+function sfmRewireSocialLinks() {
+  document.querySelectorAll("a.fb-link").forEach((a) => {
+    a.href = SFM.business.social.facebook;
+  });
+  document.querySelectorAll("a.ig-link").forEach((a) => {
+    a.href = SFM.business.social.instagram;
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   sfmRenderHeader(document.body.dataset.page);
   sfmRenderFooter();
   sfmRenderWaFloat();
   sfmRewireStaticWaLinks();
+  sfmRewireSocialLinks();
   sfmAnimateCounters();
   sfmInitReveal();
 });
