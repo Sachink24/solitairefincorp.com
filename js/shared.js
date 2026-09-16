@@ -5,8 +5,15 @@
 const SFM = {
   business: {
     name: "SOLITAIRE FINZ MART",
+    // Used for voice calls (tel: links) and displayed as the contact number.
     phone: "8779023084",
     phoneDisplay: "+91 87790 23084",
+    // Used for WhatsApp click-to-chat / bot deep links. This is the number
+    // actually registered with the WhatsApp Cloud API (Meta test number
+    // during development). Swap this to the real business number's digits
+    // (with country code, no +, no spaces) once it's migrated to Cloud API —
+    // do NOT just copy the "phone" value above, they serve different purposes.
+    whatsappNumber: "15551770472",
     email: "sachinkale241981@gmail.com",
     address: "Shop No. 8, Janaram Niwas, Thane Bhiwandi Road, Thane Bhiwandi, 421302",
     hours: "Mon – Sat, 10:00 AM – 7:00 PM",
@@ -20,7 +27,7 @@ const SFM = {
 };
 
 function sfmWaLink(prefilledText) {
-  const digits = "91" + SFM.business.phone;
+  const digits = SFM.business.whatsappNumber;
   const text = encodeURIComponent(prefilledText || "Hello SOLITAIRE FINZ MART, I'd like to enquire about a loan.");
   return `https://wa.me/${digits}?text=${text}`;
 }
@@ -249,10 +256,21 @@ function sfmInitReveal() {
   els.forEach(el => io.observe(el));
 }
 
+// A few pages have static <a href="https://wa.me/..."> links written
+// directly in the HTML (not generated via sfmWaLink()). Rewire them here
+// so SFM.business.whatsappNumber stays the single source of truth —
+// change it in one place instead of hunting through every .html file.
+function sfmRewireStaticWaLinks() {
+  document.querySelectorAll("a.wa-link").forEach((a) => {
+    a.href = sfmWaLink();
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   sfmRenderHeader(document.body.dataset.page);
   sfmRenderFooter();
   sfmRenderWaFloat();
+  sfmRewireStaticWaLinks();
   sfmAnimateCounters();
   sfmInitReveal();
 });
