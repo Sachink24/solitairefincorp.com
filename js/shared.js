@@ -8,12 +8,11 @@ const SFM = {
     // Used for voice calls (tel: links) and displayed as the contact number.
     phone: "8779023084",
     phoneDisplay: "+91 87790 23084",
-    // Used for WhatsApp click-to-chat / bot deep links. This is the number
-    // actually registered with the WhatsApp Cloud API (Meta test number
-    // during development). Swap this to the real business number's digits
-    // (with country code, no +, no spaces) once it's migrated to Cloud API —
-    // do NOT just copy the "phone" value above, they serve different purposes.
-    whatsappNumber: "15551770472",
+    // Used for WhatsApp click-to-chat / bot deep links. Now the real
+    // business number, live on the WhatsApp Cloud API (migrated from the
+    // Meta test number on 2026-09-18 via Coexistence, so the WhatsApp
+    // Business app on this same number keeps working too).
+    whatsappNumber: "918779023084",
     email: "sachinkale241981@gmail.com",
     address: "Shop No. 8, Janaram Niwas, Thane Bhiwandi Road, Thane Bhiwandi, 421302",
     hours: "Mon – Sat, 10:00 AM – 7:00 PM",
