@@ -8,11 +8,9 @@ const SFM = {
     // Used for voice calls (tel: links) and displayed as the contact number.
     phone: "8779023084",
     phoneDisplay: "+91 87790 23084",
-    // Used for WhatsApp click-to-chat / bot deep links. Now the real
-    // business number, live on the WhatsApp Cloud API (migrated from the
-    // Meta test number on 2026-09-18 via Coexistence, so the WhatsApp
-    // Business app on this same number keeps working too).
-    whatsappNumber: "918779023084",
+    // Used for WhatsApp click-to-chat / bot deep links. Live on the
+    // WhatsApp Cloud API (updated 2026-09-20 to a fresh dedicated number).
+    whatsappNumber: "918356902635",
     email: "sachinkale241981@gmail.com",
     address: "Shop No. 8, Janaram Niwas, Thane Bhiwandi Road, Thane Bhiwandi, 421302",
     hours: "Mon – Sat, 10:00 AM – 7:00 PM",
