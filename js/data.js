@@ -135,9 +135,9 @@ const SFM_PARTNERS = [
 ];
 
 const SFM_TESTIMONIALS = [
-  { quote: "Solitaire Finz Mart walked us through every step of our home loan and kept us informed at every stage.", name: "Demo Testimonial", role: "Home Loan customer" },
-  { quote: "Our business loan paperwork was sorted out faster than we expected, with clear guidance throughout.", name: "Demo Testimonial", role: "Business Loan customer" },
-  { quote: "The balance transfer process was explained clearly, and the savings on our EMI were exactly as projected.", name: "Demo Testimonial", role: "Balance Transfer customer" },
+  { quote: "Solitaire Finz Mart walked us through every step of our home loan and kept us informed at every stage.", name: "Mr Rajiv Patil", role: "Home Loan customer" },
+  { quote: "Our business loan paperwork was sorted out faster than we expected, with clear guidance throughout.", name: "Mr Sandeep Chavan", role: "Business Loan customer" },
+  { quote: "The balance transfer process was explained clearly, and the savings on our EMI were exactly as projected.", name: "Mr Chotelal Sonkar", role: "Balance Transfer customer" },
 ];
 
 const SFM_FAQS = [
