@@ -129,6 +129,7 @@ const SFM_PARTNERS = [
 const SFM_TESTIMONIALS = [
   { quote: "Solitaire Finz Mart walked us through every step of our loan and kept us informed at every stage.", name: "Mr. Chotelal Sonkar", role: "Solitaire Finz Mart customer" },
   { quote: "The process was explained clearly, and the team stayed available for every question we had along the way.", name: "Mr. Jayram Bangera", role: "Solitaire Finz Mart customer" },
+   { quote: "Solitaire Finz Mart made our home loan journey simple and transparent. Their team guided us through the documentation and application process and kept us updated at every stage", name: "Mr. Rajendra Chavan", role: "Solitaire Finz Mart customer" },
 ];
 
 const SFM_FAQS = [
