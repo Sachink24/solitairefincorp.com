@@ -270,6 +270,28 @@ input[type="range"]::-moz-range-thumb{ width:18px; height:18px; border-radius:50
 .testi-name{ font-size:.85rem; font-weight:600; color:var(--gold-bright); margin-top:1rem; }
 .testi-role{ font-size:.78rem; color:var(--text-on-ink-muted); }
 
+.testi-slider{ display:flex; align-items:center; gap:.75rem; }
+.testi-slider-viewport{
+  flex:1 1 auto; overflow-x:auto; scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.testi-slider-viewport::-webkit-scrollbar{ display:none; }
+.testi-slider-track{
+  display:flex; gap:1.5rem;
+}
+.testi-slider-track .testi-card{
+  flex:0 0 auto; width:min(380px, 88vw); scroll-snap-align:start;
+}
+.testi-nav{
+  flex:0 0 auto; width:2.6rem; height:2.6rem; border-radius:50%;
+  border:1px solid rgba(255,255,255,.25); background:transparent; color:var(--text-on-ink);
+  font-size:1.4rem; line-height:1; cursor:pointer; transition:background .18s ease, border-color .18s ease;
+}
+.testi-nav:hover{ background:rgba(255,255,255,.08); border-color:var(--gold-bright); }
+@media (max-width: 640px){
+  .testi-nav{ display:none; }
+}
+
 /* ---------- timeline (about) ---------- */
 .timeline{ position:relative; padding-left:2.2rem; }
 .timeline::before{ content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--line-on-paper); }
