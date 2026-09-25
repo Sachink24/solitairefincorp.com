@@ -160,7 +160,7 @@ function sfmRenderFooter() {
           <li><a href="products.html#home-loan">Home Loan</a></li>
           <li><a href="products.html#loan-against-property">Loan Against Property</a></li>
           <li><a href="products.html#business-loan">Business Loan</a></li>
-          <li><a href="products.html#balance-transfer">Balance Transfer</a></li>
+          <li><a href="products.html#balance-transfer-topup">Balance Transfer &amp; Top-up</a></li>
           <li><a href="products.html">View all products</a></li>
         </ul>
       </div>
