@@ -168,8 +168,13 @@ src="https://www.facebook.com/tr?id=1618599003008832&ev=PageView&noscript=1"
         <p class="kicker">Customer Testimonials</p>
         <h2>What our customers say</h2>
       </div>
-      <div class="grid grid-3" id="home-testimonials"></div>
-      <p style="font-size:.75rem; color:var(--text-on-ink-muted); margin-top:1.4rem;">Demo content shown pending verified customer testimonials.</p>
+      <div class="testi-slider">
+        <button type="button" class="testi-nav testi-nav--prev" aria-label="Previous testimonial">&#8249;</button>
+        <div class="testi-slider-viewport" id="home-testimonials-viewport">
+          <div class="testi-slider-track" id="home-testimonials"></div>
+        </div>
+        <button type="button" class="testi-nav testi-nav--next" aria-label="Next testimonial">&#8250;</button>
+      </div>
     </div>
   </section>
 
@@ -238,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("home-testimonials").innerHTML = SFM_TESTIMONIALS.map(t => `
     <div class="testi-card"><p>"${t.quote}"</p><div class="testi-name">${t.name}</div><div class="testi-role">${t.role}</div></div>`).join("");
+  sfmInitTestimonialSlider();
 
   const faqWrap = document.getElementById("home-faq");
   faqWrap.innerHTML = SFM_FAQS.slice(0,5).map((f,i) => `
@@ -247,6 +253,48 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>`).join("");
   sfmInitAccordion(faqWrap);
 });
+
+// Slide-scroll behaviour for the testimonials carousel: arrow buttons scroll
+// by one card, and it auto-advances every few seconds, pausing whenever the
+// visitor's pointer is over it (or right after they manually scroll/click,
+// so it doesn't fight with the visitor).
+function sfmInitTestimonialSlider() {
+  const viewport = document.getElementById("home-testimonials-viewport");
+  const track = document.getElementById("home-testimonials");
+  const slider = viewport?.closest(".testi-slider");
+  if (!viewport || !track || !slider) return;
+
+  const scrollByOneCard = (direction) => {
+    const card = track.querySelector(".testi-card");
+    const step = card ? card.getBoundingClientRect().width + 24 : viewport.clientWidth * 0.9;
+    viewport.scrollBy({ left: step * direction, behavior: "smooth" });
+  };
+
+  slider.querySelector(".testi-nav--prev")?.addEventListener("click", () => scrollByOneCard(-1));
+  slider.querySelector(".testi-nav--next")?.addEventListener("click", () => scrollByOneCard(1));
+
+  let autoTimer = null;
+  const AUTO_MS = 4500;
+  const startAuto = () => {
+    stopAuto();
+    autoTimer = setInterval(() => {
+      const atEnd = viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 4;
+      if (atEnd) {
+        viewport.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        scrollByOneCard(1);
+      }
+    }, AUTO_MS);
+  };
+  const stopAuto = () => { if (autoTimer) clearInterval(autoTimer); };
+
+  slider.addEventListener("mouseenter", stopAuto);
+  slider.addEventListener("mouseleave", startAuto);
+  slider.addEventListener("touchstart", stopAuto, { passive: true });
+
+  // Only auto-advance when there's more than one card to actually slide to.
+  if (track.querySelectorAll(".testi-card").length > 1) startAuto();
+}
 </script>
 </body>
 </html>
