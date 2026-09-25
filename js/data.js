@@ -38,6 +38,14 @@ const SFM_PRODUCTS = [
     process: ["Share requirement", "Quick eligibility check", "Documentation", "Sanction & disbursement"],
   },
   {
+    slug: "balance-transfer-topup", name: "Balance Transfer & Top-up", icon: "exchange", short: "Move your existing loan to a lender offering better terms, and access a top-up on the same facility if eligible.",
+    amount: "As per outstanding loan, plus eligible top-up*", rate: "Starting from 8.35%* p.a.", tenure: "Remaining original tenure or higher",
+    eligibility: ["Satisfactory repayment track record on the existing loan", "Property / asset in good standing (for secured loans)", "Acceptable income profile"],
+    documents: ["Existing loan statement / foreclosure letter", "Property documents (if secured)", "Income proof"],
+    benefits: ["Potential to reduce interest outgo", "Additional top-up funds on the same facility", "Assistance managing the transfer paperwork end-to-end", "Faster processing than a fresh loan"],
+    process: ["Share existing loan & requirement details", "Rate & savings comparison", "Documentation", "New sanction, transfer & top-up disbursement"],
+  },
+  {
     slug: "business-loan", name: "Business Loan", icon: "briefcase", short: "Working capital and growth capital for proprietorships, partnerships and companies.",
     amount: "₹1 Lakh – ₹5 Crore*", rate: "Starting from 11%* p.a.", tenure: "Up to 7 years",
     eligibility: ["Business vintage as per lender policy (typically 2+ years)", "Healthy banking and ITR track record", "Proprietorship, partnership, LLP or Pvt Ltd"],
@@ -93,22 +101,6 @@ const SFM_PRODUCTS = [
     benefits: ["New and used vehicle options", "Flexible tenure choices"],
     process: ["Share vehicle & income details", "Eligibility check", "Documentation", "Sanction & disbursement"],
   },
-  {
-    slug: "balance-transfer", name: "Balance Transfer", icon: "exchange", short: "Move your existing loan to a lender offering better terms, and unlock a top-up if eligible.",
-    amount: "As per outstanding loan*", rate: "Starting from 8.35%* p.a.", tenure: "Remaining original tenure or higher",
-    eligibility: ["Satisfactory repayment track record on the existing loan", "Property / asset in good standing", "Acceptable income profile"],
-    documents: ["Existing loan statement / foreclosure letter", "Property documents", "Income proof"],
-    benefits: ["Potential to reduce interest outgo", "Option to add a top-up loan", "Assistance managing the transfer paperwork end-to-end"],
-    process: ["Share existing loan details", "Rate & savings comparison", "Documentation", "New sanction & transfer"],
-  },
-  {
-    slug: "loan-top-up", name: "Loan Top-Up", icon: "trending-up", short: "Access additional funds over your existing home loan or LAP, without a fresh full application.",
-    amount: "As per eligibility and existing loan*", rate: "Linked to base loan rate*", tenure: "Aligned to base loan",
-    eligibility: ["Existing loan in good standing", "Sufficient repayment track record", "Property value supporting the top-up"],
-    documents: ["Existing loan statement", "Income proof", "Property documents (if required)"],
-    benefits: ["Faster processing than a fresh loan", "Competitive rate linked to existing facility"],
-    process: ["Share existing loan details", "Eligibility check", "Documentation", "Sanction & disbursement"],
-  },
 ];
 
 const SFM_SERVICES = [
@@ -135,9 +127,8 @@ const SFM_PARTNERS = [
 ];
 
 const SFM_TESTIMONIALS = [
-  { quote: "Solitaire Finz Mart walked us through every step of our home loan and kept us informed at every stage.", name: "Mr Rajiv Patil", role: "Home Loan customer" },
-  { quote: "Our business loan paperwork was sorted out faster than we expected, with clear guidance throughout.", name: "Mr Sandeep Chavan", role: "Business Loan customer" },
-  { quote: "The balance transfer process was explained clearly, and the savings on our EMI were exactly as projected.", name: "Mr Chotelal Sonkar", role: "Balance Transfer customer" },
+  { quote: "Solitaire Finz Mart walked us through every step of our loan and kept us informed at every stage.", name: "Mr. Chotelal Sonkar", role: "Solitaire Finz Mart customer" },
+  { quote: "The process was explained clearly, and the team stayed available for every question we had along the way.", name: "Mr. Jayram Bangera", role: "Solitaire Finz Mart customer" },
 ];
 
 const SFM_FAQS = [
