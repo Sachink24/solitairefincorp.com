@@ -2,6 +2,18 @@
 // SOLITAIRE FINZ MART — WhatsApp Cloud API webhook + bot engine
 // Deployed as a Supabase Edge Function.
 //
+// ADDED (this version): AI Orchestrator (see ./ai-orchestrator.ts). A free-
+// typed message such as "50 lakh home loan chahiye" now goes through an
+// Intent Router that picks the product and pre-fills any answers already in
+// the message (amount, city, employment type...), then asks only the
+// remaining questions. Questions ("what documents are needed?") go to the
+// Loan Advisor, which answers and offers Apply / Talk to Expert / Main Menu.
+// Product + amount detection uses keyword rules first, so it still works if
+// Gemini is down. Runs only on a customer's first message and from the
+// MAIN_MENU / PRODUCT_SELECT / COMPLETED states — never mid-question,
+// mid-document-upload or while a human agent owns the chat. If nothing is
+// recognised the bot falls back to the exact previous menu behaviour.
+//
 // FIX (this version): after a lead is created the conversation state is
 // "COMPLETED", and the confirmation message offers three buttons:
 // "Talk to Expert", "Submit Documents", "Main Menu". "Talk to Expert" and
@@ -75,6 +87,7 @@
 // =========================================================
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { routeMessage, advise, summarizeCaptured } from "./ai-orchestrator.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -473,11 +486,14 @@ async function handleIncomingMessage(waNumber: string, message: any) {
     if (referredByName) {
       await sendText(waNumber, `You've been referred by ${referredByName} from Solitaire Finz Mart! 🙏`);
     }
+    if (await tryOrchestrate(waNumber, conversation, text, message, true)) return;
     const products = await getActiveProducts();
     const handledDeepLink = await tryProductDeepLink(waNumber, conversation, text, products);
     if (handledDeepLink) return;
     return sendWelcome(waNumber, conversation);
   }
+
+  if (await tryOrchestrate(waNumber, conversation, text, message, false)) return;
 
   switch (conversation.state) {
     case "MAIN_MENU":
@@ -508,6 +524,85 @@ async function handleIncomingMessage(waNumber: string, message: any) {
     default:
       await updateConversation(conversation.id, { state: "MAIN_MENU" });
       return sendMainMenu(waNumber, conversation);
+  }
+}
+
+// ---------------------------------------------------------
+// AI Orchestrator hook (Intent Router + Loan Advisor).
+// Returns true if it fully handled the message; false means "carry on with
+// the normal menu / state logic exactly as before".
+// Only runs for typed text, on a customer's first message, or from the
+// MAIN_MENU / PRODUCT_SELECT / COMPLETED states. It never runs while the
+// customer is answering a question, uploading documents, picking an
+// application, or chatting in AI_QUERY — and the human-agent check has
+// already happened before this is called.
+// ---------------------------------------------------------
+const ORCHESTRATE_STATES = ["MAIN_MENU", "PRODUCT_SELECT", "COMPLETED"];
+const BARE_REFERRAL_RE = /^(?:(?:referral|ref)\s*[:\-]?\s*)?[A-Z2-9]{6}$/i;
+
+async function tryOrchestrate(waNumber: string, conv: any, text: string, message: any, isNew: boolean): Promise<boolean> {
+  try {
+    if (message.type !== "text") return false;
+    const t = text.trim();
+    if (t.length < 3) return false;
+    if (!isNew && !ORCHESTRATE_STATES.includes(conv.state)) return false;
+    if (mainMenuOptions(conv).some((o) => o.toLowerCase() === t.toLowerCase())) return false;
+    if (isNew && BARE_REFERRAL_RE.test(t)) return false;
+
+    const products = await getActiveProducts();
+    const deps = { ask: GEMINI_API_KEY ? callGemini : null, companyContext: COMPANY_CONTEXT };
+    const route = await routeMessage(t, products, deps);
+
+    if (route.intent === "HUMAN") {
+      await handOverToAgent(waNumber, conv);
+      return true;
+    }
+
+    if (route.intent === "STATUS") {
+      await sendApplicationStatus(waNumber, conv);
+      return true;
+    }
+
+    if (route.intent === "QUESTION") {
+      const answer = await advise(t, products, deps);
+      if (!answer) return false; // Gemini unavailable -> normal menu, never a silent hand-over
+      const sent = await sendText(waNumber, answer);
+      await logMessage(conv.id, "outbound", answer, sent?.messages?.[0]?.id, "text");
+      await updateConversation(conv.id, { state: "MAIN_MENU" });
+      await sendButtons(waNumber, "Would you like to go ahead?", ["Apply for Loan", "Talk to Expert", "Main Menu"]);
+      return true;
+    }
+
+    if (route.intent === "NEW_LOAN" && route.product) {
+      const product = route.product;
+      const questions = product.questions as any[];
+      const seeded = route.answers ?? {};
+      const nextIndex = nextUnansweredIndex(questions, seeded);
+
+      const captured = summarizeCaptured(seeded);
+      const intro = isNew
+        ? `Welcome to Solitaire Finz Mart! 👋\n\nI can help with your ${product.label} enquiry.`
+        : `Great — I can help with your ${product.label} enquiry.`;
+      const noted = captured ? `\n\nI've noted:\n${captured}\n\nIf anything looks wrong, type "Menu" to start over.` : "";
+      await sendText(waNumber, intro + noted);
+
+      const base = { ...conv, product_key: product.key, answers: seeded };
+      if (nextIndex >= questions.length) {
+        await updateConversation(conv.id, { state: "COMPLETED", product_key: product.key, question_index: 0, answers: seeded });
+        await finalizeLead(waNumber, base, product);
+        return true;
+      }
+
+      await updateConversation(conv.id, { state: "ASKING_QUESTION", product_key: product.key, question_index: nextIndex, answers: seeded });
+      await askQuestion(waNumber, { ...base, question_index: nextIndex }, product, nextIndex);
+      return true;
+    }
+
+    return false;
+  } catch (err) {
+    // The orchestrator must never break the bot — fall back to the normal flow.
+    console.error("orchestrator failed, falling back", err);
+    return false;
   }
 }
 
@@ -712,10 +807,10 @@ Rules you must always follow:
 - If you don't know something specific to this business, say so honestly and offer to connect them with a loan expert rather than guessing.
 - Do not discuss topics unrelated to loans, financing, or this business — politely redirect instead.`;
 
-async function callGemini(systemPrompt: string, userText: string, jsonMode = false): Promise<string | null> {
+async function callGemini(systemPrompt: string, userText: string, jsonMode = false, maxTokens = 400): Promise<string | null> {
   if (!GEMINI_API_KEY) return null;
   try {
-    const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: 400 };
+    const generationConfig: Record<string, unknown> = { temperature: 0.3, maxOutputTokens: maxTokens };
     if (jsonMode) generationConfig.responseMimeType = "application/json";
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
