@@ -10,6 +10,7 @@
 //       STATUS    -> wants an application status
 //       HUMAN     -> wants to talk to a person
 //       QUESTION  -> asking for information (documents, eligibility, process)
+//       COMPANY   -> asking who we are / about the company (fixed short answer)
 //       OTHER     -> greeting / unclear (caller falls back to the normal menu)
 //
 //  2. LOAN ADVISOR — advise(): answers general loan questions, grounded to
@@ -25,7 +26,7 @@
 //    index.ts stays the single place that writes leads and talks to Meta.
 // =========================================================
 
-export type Intent = "NEW_LOAN" | "STATUS" | "HUMAN" | "QUESTION" | "OTHER";
+export type Intent = "NEW_LOAN" | "STATUS" | "HUMAN" | "QUESTION" | "COMPANY" | "OTHER";
 
 export interface OrchestratorDeps {
   // callGemini() from index.ts; null when GEMINI_API_KEY is not configured.
@@ -39,6 +40,21 @@ export interface RouteResult {
   product: any | null;
   answers: Record<string, unknown>;
   source: "ai" | "rules" | "none";
+}
+
+// ---------------------------------------------------------
+// Company introduction — fixed text (not AI-generated) so it is always
+// accurate. Edit here to change what customers see.
+// ---------------------------------------------------------
+export const COMPANY_ABOUT =
+  "*SOLITAIRE FINZ MART* is a loan and financial advisory firm in Bhiwandi, Thane (Maharashtra) with 15+ years of experience.\n\n" +
+  "We help individuals and businesses with Home Loans, Loan Against Property, Business & Personal Loans, Vehicle Finance, Balance Transfer & Top-up and Project Finance \u2014 working with leading banks and NBFCs like ICICI, Axis, SBI, HDFC, PNB, Tata Capital, Piramal and IIFL.\n\n" +
+  "Approval, rates and loan amounts are decided by the lending partner.";
+
+const COMPANY_RE = /\b(about (?:your |the |this )?(?:company|firm|business|solitaire(?: finz mart)?|us)|who are you|who r u|tell me about (?:your |the |this )?(?:company|firm|solitaire(?: finz mart)?|yourself|you)|what (?:do|does) (?:you|your company|solitaire(?: finz mart)?) do|company (?:profile|details|info|information)|introduce (?:yourself|your company)|aap kaun|aapki company|company ke (?:bare|baare)|solitaire (?:finz mart )?kya)\b/i;
+
+export function isCompanyQuestion(text: string): boolean {
+  return COMPANY_RE.test(text);
 }
 
 // ---------------------------------------------------------
@@ -170,12 +186,13 @@ function buildClassifierPrompt(products: any[]): string {
   return `You classify one WhatsApp message from a customer of SOLITAIRE FINZ MART, a loan advisory and DSA business in India. Customers write English, Hindi or Hinglish.
 
 Respond with ONLY a JSON object, no explanation, in this exact shape:
-{"intent": "NEW_LOAN" | "STATUS" | "HUMAN" | "QUESTION" | "OTHER", "product_key": string | null, "answers": object, "confidence": number between 0 and 1}
+{"intent": "NEW_LOAN" | "STATUS" | "HUMAN" | "QUESTION" | "COMPANY" | "OTHER", "product_key": string | null, "answers": object, "confidence": number between 0 and 1}
 
 Meaning of intent:
 - NEW_LOAN: the customer wants a loan or states a loan requirement.
 - STATUS: the customer asks about the status or progress of an existing application.
 - HUMAN: the customer wants to speak to a person.
+- COMPANY: the customer asks who we are or what the company does.
 - QUESTION: the customer asks for information (documents, eligibility, process, charges) without asking to apply.
 - OTHER: greeting, thanks or anything unclear.
 
@@ -196,7 +213,7 @@ async function aiClassify(text: string, products: any[], deps: OrchestratorDeps)
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const p = JSON.parse(cleaned);
     const intent = String(p?.intent ?? "").toUpperCase() as Intent;
-    if (!["NEW_LOAN", "STATUS", "HUMAN", "QUESTION", "OTHER"].includes(intent)) return null;
+    if (!["NEW_LOAN", "STATUS", "HUMAN", "QUESTION", "COMPANY", "OTHER"].includes(intent)) return null;
     const key = typeof p.product_key === "string" ? p.product_key : null;
     const conf = typeof p.confidence === "number" ? p.confidence : 0.7;
     const answers = p.answers && typeof p.answers === "object" ? p.answers : {};
@@ -210,6 +227,7 @@ export async function routeMessage(text: string, products: any[], deps: Orchestr
   const none: RouteResult = { intent: "OTHER", product: null, answers: {}, source: "none" };
   const t = text.trim();
   if (!t || GREETING_RE.test(t)) return none;
+  if (COMPANY_RE.test(t)) return { intent: "COMPANY", product: null, answers: {}, source: "rules" };
 
   const ruleProduct = findProductByRules(t, products);
   const amounts = extractAmounts(t);
