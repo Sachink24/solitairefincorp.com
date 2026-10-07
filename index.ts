@@ -2,7 +2,13 @@
 // SOLITAIRE FINZ MART — WhatsApp Cloud API webhook + bot engine
 // Deployed as a Supabase Edge Function.
 //
-// ADDED (this version): AI Orchestrator (see ./ai-orchestrator.ts). A free-
+// ADDED (this version): "About the company" answer. Questions such as "tell
+// me about your company" / "who are you" / "aap kaun ho" get a fixed short
+// description of SOLITAIRE FINZ MART (COMPANY_ABOUT in ai-orchestrator.ts)
+// followed by Apply / Talk to Expert / Main Menu buttons. Fixed text, not
+// AI-generated, so it is always accurate.
+//
+// ADDED (earlier version): AI Orchestrator (see ./ai-orchestrator.ts). A free-
 // typed message such as "50 lakh home loan chahiye" now goes through an
 // Intent Router that picks the product and pre-fills any answers already in
 // the message (amount, city, employment type...), then asks only the
@@ -87,7 +93,7 @@
 // =========================================================
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { routeMessage, advise, summarizeCaptured } from "./ai-orchestrator.ts";
+import { routeMessage, advise, summarizeCaptured, isCompanyQuestion, COMPANY_ABOUT } from "./ai-orchestrator.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -553,6 +559,11 @@ async function tryOrchestrate(waNumber: string, conv: any, text: string, message
     const deps = { ask: GEMINI_API_KEY ? callGemini : null, companyContext: COMPANY_CONTEXT };
     const route = await routeMessage(t, products, deps);
 
+    if (route.intent === "COMPANY") {
+      await sendCompanyAbout(waNumber, conv);
+      return true;
+    }
+
     if (route.intent === "HUMAN") {
       await handOverToAgent(waNumber, conv);
       return true;
@@ -604,6 +615,13 @@ async function tryOrchestrate(waNumber: string, conv: any, text: string, message
     console.error("orchestrator failed, falling back", err);
     return false;
   }
+}
+
+async function sendCompanyAbout(waNumber: string, conv: any) {
+  const sent = await sendText(waNumber, COMPANY_ABOUT);
+  await logMessage(conv.id, "outbound", COMPANY_ABOUT, sent?.messages?.[0]?.id, "text");
+  await updateConversation(conv.id, { state: "MAIN_MENU" });
+  await sendButtons(waNumber, "How can we help you today?", ["Apply for Loan", "Talk to Expert", "Main Menu"]);
 }
 
 async function tryProductDeepLink(waNumber: string, conv: any, rawText: string, products: any[]): Promise<boolean> {
@@ -800,6 +818,8 @@ const GEMINI_MODEL = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.8-flash";
 
 const COMPANY_CONTEXT = `You are a helpful assistant for SOLITAIRE FINZ MART, a loan and financial advisory business in Thane-Bhiwandi, Maharashtra, India. They assist customers with Home Loans, Loan Against Property, Business Loans, Personal Loans, Project/Construction Finance, and Vehicle/Commercial Vehicle Finance, coordinating with multiple banks and NBFC lending partners.
 
+Facts about the company (use only these when asked about the business): based in Bhiwandi, Thane, Maharashtra; 15+ years of experience; works with lending partners including ICICI, Axis, SBI, HDFC, PNB, Tata Capital, Piramal and IIFL.
+
 Rules you must always follow:
 - Never state or imply a guaranteed loan approval, a specific interest rate, or a guaranteed loan amount.
 - If asked about specific rates, eligibility, or approval chances, explain these depend on the lending institution's own assessment, and offer to connect the customer with a loan expert.
@@ -931,6 +951,11 @@ async function handleUnrecognizedAnswer(waNumber: string, conv: any, product: an
 async function handleAIQueryReply(waNumber: string, conv: any, text: string) {
   if (text.trim().toLowerCase() === "ask another") {
     await sendText(waNumber, "Sure — what would you like to know?");
+    return;
+  }
+  if (isCompanyQuestion(text)) {
+    await sendText(waNumber, COMPANY_ABOUT);
+    await sendButtons(waNumber, "Anything else?", ["Ask Another", "Talk to Expert", "Main Menu"]);
     return;
   }
   const answer = await geminiAnswerQuery(text);
